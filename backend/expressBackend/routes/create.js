@@ -10,6 +10,60 @@ var jwt = require('jsonwebtoken');
 
 //
 
+router.post('/user', (req, res) => {
+    User.find({email: req.body.email}).then(user => {
+        if(user) {
+            res.status(400).json({message: 'The email address already exists'})
+        } else {
+            const newUser = new User({
+                name: req.body.name,
+                email: req.body.email,
+                password: req.body.password
+            })
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(newUser.password, salt, (err, hash) => {
+                    if (err) throw err;
+                    newUser.password = hash
+                    newUser.save().then(user => {
+                        res.status(200).json(user)
+                    }).catch(err => res.status(400).json({
+                        err: err,
+                        message: 'Authorization Failed'
+                    }))
+                })
+            })
+        }
+    })
+})
+
+// Creat Token
+let selectedUser;
+router.post('/token', (req, res) => {
+    User.find({email: req.body.email}).then(user => {
+        if(!user) {
+          return  res.status(400).json({message: 'There is not a user with that email'})
+        }    
+            selectedUser = user;
+           return  bcrypt.compare(req.body.password, user.password)
+    }).then(success => {
+        if(!success) {
+            res.status(400).json({message:'The passwords do not match'})
+        }
+        const token = jwt.sign({email: fetchedUser.email, userId: fetchedUser._id , name: fetchedUser.name},
+            'thesecretisyabbadabbado',
+            {expiresIn: '1h'}
+        );
+        res.status(200).json({
+            token: token,
+            userId: selectedUser._id,
+            expiresIn: 3600
+        })
+    }).catch(err => res.status(400).json({
+        err:err,
+        message: 'Authorization Failed'
+    }));
+})
+
 // create Team, Player, Game
 
 // router.post('')
