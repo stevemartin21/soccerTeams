@@ -5,7 +5,7 @@ import setAuthToken from '../utils/setAuthToken';
 
 export const registerUser = (userData, history) => dispatch => {
 
-    axios.post('http://localhost:3000/create/user', userData)
+    axios.post('http://localhost:3001/create/user', userData)
         .then(res => history.push('/login'))
         .catch(err => dispatch({
             type: GET_ERRORS,

@@ -26,6 +26,14 @@ import { logoutUser } from '../../actions/authActions';
       <li className="nav-item">
         <Link className="nav-link"  to='/addTeam' >Add Team</Link>
       </li>
+
+      <li className="nav-item">
+        <Link className="nav-link"  to='/addGame' >Add Game</Link>
+      </li>
+
+      <li className="nav-item">
+        <Link className="nav-link"  to='/addPlayer' >Add Player</Link>
+      </li>
     
       <li className="nav-item">
         <a className="nav-link" onClick={this.onLogOutClick.bind(this)}  >Logout</a>

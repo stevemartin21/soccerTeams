@@ -13,72 +13,84 @@ var validLoginInput = require('../validation/login');
 //
 
 router.post('/user', (req, res) => {
-
+    /*
     const { errors, isValid} = validRegistrationInput(req.body);
 
     if(!isValid) {
         return res.status(400).json(errors);
     }
+    */
 
+    console.log(req.body);
 
-    User.find({email: req.body.email}).then(user => {
+    User.findOne({email: req.body.email}).then(user => {
+        console.log(user);
         if(user) {
-            res.status(400).json({message: 'The email address already exists'})
+           res.status(400).json({message: 'The email address already exists'})
         } else {
             const newUser = new User({
                 name: req.body.name,
                 email: req.body.email,
                 password: req.body.password
             })
+            console.log(newUser)
             bcrypt.genSalt(10, (err, salt) => {
                 bcrypt.hash(newUser.password, salt, (err, hash) => {
                     if (err) throw err;
-                    newUser.password = hash
+                    newUser.password = hash;
                     newUser.save().then(user => {
-                        res.status(200).json(user)
-                    }).catch(err => res.status(400).json({
+                        console.log(user + ' save new user')
+                        res.status(200).json(user);
+                    }).catch(err => 
+                         res.status(400).json({
                         err: err,
                         message: 'Authorization Failed'
                     }))
                 })
             })
         }
-    })
+    }) 
 })
 
 // Creat Token
 let selectedUser;
 router.post('/token', (req, res) => {
-    User.find({email: req.body.email}).then(user => {
+    User.findOne({email: req.body.email}).then(user => {
         if(!user) {
+            console.log(user)
           return  res.status(400).json({message: 'There is not a user with that email'})
         }    
             selectedUser = user;
            return  bcrypt.compare(req.body.password, user.password)
     }).then(success => {
+        console.log(success + ' passed passwords');
         if(!success) {
             res.status(400).json({message:'The passwords do not match'})
         }
-        const token = jwt.sign({email: fetchedUser.email, userId: fetchedUser._id , name: fetchedUser.name},
+        console.log('Sign that token');
+        const token = jwt.sign(
+            {email: selectedUser.email, userId: selectedUser._id, name: selectedUser.name},
             'thesecretisyabbadabbado',
             {expiresIn: '1h'}
-        );
-        res.status(200).json({
-            token: token,
-            userId: selectedUser._id,
-            expiresIn: 3600
+           )
+    
+           console.log(token);
+           res.status(200)
+            .json({token: 'Bearer ' + token,
+            expiresIn: '3600',
+            userId: selectedUser._id
+            })
+        }).catch(error => {
+            res.status(400).json({message: 'There was an error'
+            })
         })
-    }).catch(err => res.status(400).json({
-        err:err,
-        message: 'Authorization Failed'
-    }));
 })
 
 // create Team, Player, Game
 
 // router.post('')
 
-router.post('team', (req, res) => {
+router.post('/team', (req, res) => {
     const newTeam = new Team({
         name: req.body.name,
         players: req.body.players,
@@ -104,17 +116,22 @@ router.post('/player', (req, res) => {
 })
 
 router.post('/game', (req, res) => {
+    console.log(req.body);
     const newGame = new Game({
         date: req.body.date,
-        time: req.body.time,
-        location: req.body.location,
-        score: req.body.score,
-        teams: req.body.teams
+        time: '',
+        location: '',
+        score: '',
+        teams: ''
     })
 
     newGame.save().then(game => {
+        console.log(game);
         res.status(200).json(game)
-    }).catch(err => res.status(400).json(err));
+    }).catch(err => res.status(400).json({
+        err: err, 
+        message: 'There was an error'
+    }));
 })
 
 /*

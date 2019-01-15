@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import classnames from 'classnames';
+import { connect } from 'react-redux';
+import Proptypes from 'prop-types';
+import {createTeam } from '../../actions/createActions';
+import {withRouter} from 'react-router-dom';
 
 class AddTeam extends Component {
 
@@ -21,6 +26,8 @@ class AddTeam extends Component {
             name: this.state.name
         }
         console.log(newTeam);
+
+        this.props.createTeam(newTeam, this.props.history)
     }
 
 
@@ -57,6 +64,17 @@ class AddTeam extends Component {
   }
 }
 
-export default AddTeam
+AddTeam.propTypes = {
+    createTeam: Proptypes.func.isRequired,
+    errors: Proptypes.object.isRequired
+}
+
+const mapStateToProps = (state) => ({
+    errors: state.errors,
+    auth: state.auth,
+    team: state.team
+})
+
+export default connect(mapStateToProps, {createTeam})(withRouter(AddTeam))
 
 // City, Stadium, Year Founded 

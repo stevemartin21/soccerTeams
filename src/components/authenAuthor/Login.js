@@ -26,7 +26,7 @@ import classnames from 'classnames';
       this.props.history.push('/dashboard')
     }
     if(nextProps.errors) {
-      this.state({errors: nextProps.errors})
+      this.setState({errors: nextProps.errors})
     }
   }
 

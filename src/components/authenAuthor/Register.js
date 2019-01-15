@@ -19,7 +19,7 @@ import {withRouter} from 'react-router-dom';
 
    componentWillReceiveProps(nextProps) {
      if(nextProps.errors) {
-       this.state({errors: nextProps.errors})
+       this.setState({errors: nextProps.errors})
      }
    }
 

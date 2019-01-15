@@ -12,6 +12,8 @@ import {BrowserRouter as Router , Route, Switch } from 'react-router-dom';
 import Register from './components/authenAuthor/Register';
 import Login from './components/authenAuthor/Login';
 import AddTeam from './components/teams/AddTeam';
+import AddPlayer from './components/players/AddPlayer';
+import AddGame from './components/games/AddGame';
 
 // Check for token
 if (localStorage.jwtToken) {
@@ -45,10 +47,13 @@ class App extends Component {
             <Navigation />
             <Route exact path='/' component={ Home } />
             <Route exact path='/register' component={ Register } />
-            <Route exact path='/addTeam' component={ AddTeam } />
+            <Route exact path='/login' component={ Login } />
+            
+           
             <Switch>
-              <PrivateRouter exact path='/login' component={Login} />
-             
+              <PrivateRouter exact path='/addGame' component={AddGame} />
+              <PrivateRouter exact path='/addTeam' component={AddTeam} />
+              <PrivateRouter exact path='/addPlayer' component={AddPlayer} />
           </Switch>
             <Footer />
 
