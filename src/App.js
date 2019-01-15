@@ -1,18 +1,60 @@
 import React, { Component } from 'react';
-import { Button } from "mdbreact";
-import logo from './logo.png';
+import { Provider } from 'react-redux';
+import store from './store';
+import jwt_decode from 'jwt-decode';
+import setAuthToken from './utils/setAuthToken';
+import PrivateRouter from './components/PrivateRouter';
+import { setCurrentUser, logoutUser} from './actions/authActions';
+import Navigation from './components/layout/Navigation';
+import Footer from './components/layout/Footer';
+import Home from './components/layout/Home'
+import {BrowserRouter as Router , Route, Switch } from 'react-router-dom';
+import Register from './components/authenAuthor/Register';
+import Login from './components/authenAuthor/Login';
+import AddTeam from './components/teams/AddTeam';
+
+// Check for token
+if (localStorage.jwtToken) {
+  // Set auth token header auth
+  setAuthToken(localStorage.jwtToken);
+  // Decode token and get user info and exp
+  const decoded = jwt_decode(localStorage.jwtToken);
+  // Set user and isAuthenticated
+  store.dispatch(setCurrentUser(decoded));
+
+  // Check for expired token
+  const currentTime = Date.now() / 1000;
+  if (decoded.exp < currentTime) {
+    // Logout user
+    store.dispatch(logoutUser());
+    // TODO: Clear current Profile
+
+    // Redirect to login
+    window.location.href = '/login';
+  }
+}
+
+
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header ">
-          <img src={logo} alt="logo" className="App-logo" />
-          <h1 className="App-title">Welcome to Your MDB React App</h1>
-        </header>
-        <p className="mb-2">The application is configured and ready to import our components.</p>
-        <Button href="https://mdbootstrap.com/react/" target="blank" color="light-blue"><strong>Check out our docs!</strong></Button>
-      </div>
+      <Provider store={store}>
+          <Router>
+          <div >
+            <Navigation />
+            <Route exact path='/' component={ Home } />
+            <Route exact path='/register' component={ Register } />
+            <Route exact path='/addTeam' component={ AddTeam } />
+            <Switch>
+              <PrivateRouter exact path='/login' component={Login} />
+             
+          </Switch>
+            <Footer />
+
+          </div>
+          </Router>
+      </Provider>
     );
   }
 }

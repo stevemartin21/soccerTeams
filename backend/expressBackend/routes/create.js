@@ -7,10 +7,20 @@ var User = require('../models/user');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 
+var validRegistrationInput = require('../validation/register');
+var validLoginInput = require('../validation/login');
 
 //
 
 router.post('/user', (req, res) => {
+
+    const { errors, isValid} = validRegistrationInput(req.body);
+
+    if(!isValid) {
+        return res.status(400).json(errors);
+    }
+
+
     User.find({email: req.body.email}).then(user => {
         if(user) {
             res.status(400).json({message: 'The email address already exists'})

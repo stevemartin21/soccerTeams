@@ -41,3 +41,8 @@
 	color:rgba(0,0,0,.35);
 	float:right;
 }
+
+.registerForm{
+	width: 60%;
+	margin: 10px auto;
+}
